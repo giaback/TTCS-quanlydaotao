@@ -35,7 +35,7 @@ public class DashboardController {
         }
         Map<String, Object> response = new HashMap<>();
         response.put("tongSoTinChi", tongSoTinChi);
-        response.put("soTienPhaiNop", (long) tongSoTinChi * 1600000);
+        response.put("soTienPhaiNop", (long) tongSoTinChi * 500000);
         return response;
     }
 

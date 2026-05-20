@@ -29,10 +29,12 @@ public class ThoiKhoaBieuController {
                 map.put("maMon", tkb.getLopHocPhan().getMonHoc().getMaMon());
                 map.put("tenMon", tkb.getLopHocPhan().getMonHoc().getTenMon());
                 map.put("nhom", tkb.getLopHocPhan().getNhom());
+                map.put("giangVien", tkb.getLopHocPhan().getGiangVien());
             } else {
                 map.put("maMon", "N/A");
                 map.put("tenMon", "N/A");
                 map.put("nhom", "N/A");
+                map.put("giangVien", "N/A");
             }
             map.put("thu", tkb.getThu());
             map.put("tietBatDau", tkb.getTietBatDau());
