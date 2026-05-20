@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>PTIT Academic - Thông tin cá nhân</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-header">PTIT ACADEMIC</div>
+    <ul class="menu">
+        <li onclick="location.href='dashboard.html'"><i class="fa-solid fa-house"></i> Trang chủ</li>
+        <li onclick="location.href='dang-ky.html'"><i class="fa-solid fa-pen"></i> Đăng ký môn học</li>
+        <li onclick="location.href='hoc-phi.html'"><i class="fa-solid fa-wallet"></i> Tra cứu học phí</li>
+        <li onclick="location.href='ket-qua.html'"><i class="fa-solid fa-graduation-cap"></i> Kết quả học tập</li>
+        <li onclick="location.href='lich-thi.html'"><i class="fa-solid fa-calendar-days"></i> Xem lịch thi</li>
+        <li onclick="location.href='thoi-khoa-bieu.html'"><i class="fa-solid fa-calendar-week"></i> Thời khóa biểu</li>
+    </ul>
+</div>
+<div class="main-content">
+  <div class="topbar">
+      <div class="user-profile" onclick="document.getElementById('user-dropdown').classList.toggle('show')">
+          <div class="user-info-top">
+              <div class="name" id="topbar-name">Đang tải...</div>
+              <div class="msv" id="topbar-msv">---</div>
+          </div>
+          <img src="https://ui-avatars.com/api/?name=U&background=bb0000&color=fff" id="topbar-avatar" alt="avatar">
+          <ul class="dropdown-menu" id="user-dropdown">
+              <li><i class="fa-solid fa-address-card"></i> Họ tên: <b id="drop-name">...</b></li>
+              <li><i class="fa-solid fa-id-badge"></i> Tài khoản: <b id="drop-msv">...</b></li>
+              <li style="cursor: pointer;" onclick="location.href='thong-tin.html'"><i class="fa-solid fa-user-gear"></i> Thông tin cá nhân</li>
+              <li style="color: red; cursor: pointer;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+          </ul>
+      </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+      <h2 style="margin: 0; color: #cc8800;"><i class="fa-solid fa-hand-sparkles"></i> Chào mừng <span id="welcome-name">...</span></h2>
+  </div>
+
+  <!-- Card Thông tin sinh viên -->
+  <div class="card">
+      <div class="card-header">
+          <span><i class="fa-solid fa-user"></i> Thông tin sinh viên</span>
+          <div>
+              <button class="btn-edit" onclick="openEditModal()"><i class="fa-solid fa-pen"></i> Sửa thông tin</button>
+              <button class="btn-edit" style="background:#2c3e50;" onclick="openPwdModal()"><i class="fa-solid fa-key"></i> Đổi mật khẩu</button>
+          </div>
+      </div>
+      <div class="card-body info-grid">
+          <div class="info-avatar">
+              <img src="https://ui-avatars.com/api/?name=U&background=bb0000&color=fff&size=200" id="main-avatar" alt="Avatar">
+          </div>
+          <div class="info-details">
+              <div>
+                  <div class="info-item"><div class="info-label">Mã SV:</div><div class="info-value" id="info-msv">---</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Tên sinh viên:</div><div class="info-value" id="info-hoten">---</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Ngày sinh:</div><div class="info-value" id="info-ngaysinh">---</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Giới tính:</div><div class="info-value">Nam</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Trạng thái:</div><div class="info-value">Đang học</div></div>
+              </div>
+              <div>
+                  <div class="info-item"><div class="info-label">Số điện thoại:</div><div class="info-value" id="info-sdt">---</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Số CMND/CCCD:</div><div class="info-value">---</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Dân tộc:</div><div class="info-value">Kinh</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Tôn giáo:</div><div class="info-value">Không</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Nơi sinh:</div><div class="info-value" id="info-noisinh">---</div></div>
+              </div>
+              <div>
+                  <div class="info-item"><div class="info-label">Quốc tịch:</div><div class="info-value">Việt Nam</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Email 1:</div><div class="info-value" id="info-email">---</div></div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Card Thông tin khóa học -->
+  <div class="card">
+      <div class="card-header"><i class="fa-solid fa-graduation-cap"></i> Thông tin khóa học</div>
+      <div class="card-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; font-size: 14px;">
+              <div>
+                  <div class="info-item"><div class="info-label">Lớp:</div><div class="info-value" id="info-lop">---</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Ngành:</div><div class="info-value" id="info-nganh">---</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Khoa:</div><div class="info-value">Viễn Thông</div></div>
+              </div>
+              <div>
+                  <div class="info-item"><div class="info-label">Bậc hệ đào tạo:</div><div class="info-value">Đại học chính quy</div></div>
+                  <div class="info-item" style="margin-top:10px;"><div class="info-label">Niên khóa:</div><div class="info-value">2023-2028</div></div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Card Biểu đồ -->
+  <div class="card">
+      <div class="card-header"><i class="fa-solid fa-chart-bar"></i> Biểu đồ kết quả học tập</div>
+      <div class="card-body" style="height: 300px; display: flex; justify-content: center;">
+          <canvas id="gradeChart"></canvas>
+      </div>
+  </div>
+</div>
+
+<!-- Modal Sửa Thông Tin -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">Chỉnh sửa thông tin cá nhân</div>
+        <div class="form-group">
+            <label>Họ và Tên</label>
+            <input type="text" id="edit-hoten">
+        </div>
+        <div class="form-group">
+            <label>Quê quán (Nơi sinh)</label>
+            <input type="text" id="edit-noisinh">
+        </div>
+        <div class="form-group">
+            <label>Ngày sinh</label>
+            <input type="date" id="edit-ngaysinh">
+        </div>
+        <p id="edit-msg" style="color: red; font-size: 13px;"></p>
+        <div class="modal-actions">
+            <button class="btn btn-cancel" onclick="closeEditModal()">Hủy</button>
+            <button class="btn btn-save" onclick="saveInfo()">Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Đổi Mật Khẩu -->
+<div class="modal" id="pwdModal">
+    <div class="modal-content">
+        <div class="modal-header">Đổi mật khẩu (Số điện thoại)</div>
+        <div class="form-group">
+            <label>Mật khẩu cũ</label>
+            <input type="password" id="pwd-old">
+        </div>
+        <div class="form-group">
+            <label>Mật khẩu mới</label>
+            <input type="password" id="pwd-new">
+        </div>
+        <div class="form-group">
+            <label>Xác nhận mật khẩu mới</label>
+            <input type="password" id="pwd-confirm">
+        </div>
+        <p id="pwd-msg" style="color: red; font-size: 13px;"></p>
+        <div class="modal-actions">
+            <button class="btn btn-cancel" onclick="closePwdModal()">Hủy</button>
+            <button class="btn btn-save" onclick="changePassword()">Đổi mật khẩu</button>
+        </div>
+    </div>
+</div>
+
+<script>
+  const maSV = localStorage.getItem('maSVHienTai');
+  if(!maSV) { location.href = 'login.html'; }
+
+  document.addEventListener('DOMContentLoaded', function() {
+      loadInfo();
+      loadChart();
+      
+      // Topbar logic
+      document.addEventListener('click', function(event) {
+          const profile = document.querySelector('.user-profile');
+          if (profile && !profile.contains(event.target)) {
+              const dropdown = document.getElementById('user-dropdown');
+              if(dropdown) dropdown.classList.remove('show');
+          }
+      });
+  });
+
+  function loadInfo() {
+    fetch(`http://localhost:8080/api/sinhvien/${maSV}`)
+            .then(res => res.json())
+            .then(data => {
+              // Topbar
+              document.getElementById('topbar-name').innerText = data.hoTen;
+              document.getElementById('topbar-msv').innerText = data.maSV;
+              document.getElementById('drop-name').innerText = data.hoTen;
+              document.getElementById('drop-msv').innerText = data.maSV;
+              const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.hoTen)}&background=bb0000&color=fff`;
+              document.getElementById('topbar-avatar').src = avatarUrl;
+              document.getElementById('main-avatar').src = avatarUrl + "&size=200";
+              
+              // Page Data
+              document.getElementById('welcome-name').innerText = data.hoTen;
+              document.getElementById('info-msv').innerText = data.maSV;
+              document.getElementById('info-hoten').innerText = data.hoTen;
+              document.getElementById('info-ngaysinh').innerText = data.ngaySinh || "---";
+              document.getElementById('info-noisinh').innerText = data.noiSinh || "---";
+              document.getElementById('info-lop').innerText = data.lop;
+              document.getElementById('info-nganh').innerText = data.nganh;
+              document.getElementById('info-sdt').innerText = "********"; // Ẩn sđt
+              document.getElementById('info-email').innerText = data.maSV.toLowerCase() + "@stu.ptit.edu.vn";
+              
+              // Fill Modal Edit
+              document.getElementById('edit-hoten').value = data.hoTen;
+              document.getElementById('edit-noisinh').value = data.noiSinh || "";
+              document.getElementById('edit-ngaysinh').value = data.ngaySinh || "";
+            });
+  }
+
+  function loadChart() {
+      fetch(`http://localhost:8080/api/ket-qua/${maSV}`)
+      .then(res => res.json())
+      .then(data => {
+          if(data.length === 0) return;
+          
+          const labels = data.map(kq => kq.monHoc.tenMon);
+          const scores = data.map(kq => kq.diemTk10);
+          
+          const ctx = document.getElementById('gradeChart').getContext('2d');
+          new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      label: 'Điểm hệ 10',
+                      data: scores,
+                      backgroundColor: '#32cd32', // Xanh lá giống PTIT
+                      borderRadius: 4,
+                      barPercentage: 0.5
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                      y: { beginAtZero: true, max: 10 }
+                  },
+                  plugins: {
+                      legend: { display: false }
+                  }
+              }
+          });
+      });
+  }
+
+  // Edit Modal Logic
+  function openEditModal() { document.getElementById('editModal').classList.add('show'); }
+  function closeEditModal() { document.getElementById('editModal').classList.remove('show'); document.getElementById('edit-msg').innerText = ''; }
+  
+  function saveInfo() {
+      const hoTen = document.getElementById('edit-hoten').value;
+      const noiSinh = document.getElementById('edit-noisinh').value;
+      const ngaySinh = document.getElementById('edit-ngaysinh').value;
+      
+      fetch('http://localhost:8080/api/sinhvien/update-info', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ maSV: maSV, hoTen: hoTen, noiSinh: noiSinh, ngaySinh: ngaySinh })
+      })
+      .then(res => res.text())
+      .then(data => {
+          if(data === 'SUCCESS') {
+              closeEditModal();
+              loadInfo(); // reload data
+          } else {
+              document.getElementById('edit-msg').innerText = 'Lưu thất bại!';
+          }
+      });
+  }
+
+  // Password Modal Logic
+  function openPwdModal() { document.getElementById('pwdModal').classList.add('show'); }
+  function closePwdModal() { 
+      document.getElementById('pwdModal').classList.remove('show'); 
+      document.getElementById('pwd-msg').innerText = ''; 
+      document.getElementById('pwd-old').value = '';
+      document.getElementById('pwd-new').value = '';
+      document.getElementById('pwd-confirm').value = '';
+  }
+
+  function changePassword() {
+      const oldPwd = document.getElementById('pwd-old').value;
+      const newPwd = document.getElementById('pwd-new').value;
+      const confirmPwd = document.getElementById('pwd-confirm').value;
+      const msg = document.getElementById('pwd-msg');
+      
+      if(!oldPwd || !newPwd || !confirmPwd) { msg.innerText = 'Vui lòng nhập đầy đủ!'; return; }
+      if(newPwd !== confirmPwd) { msg.innerText = 'Mật khẩu xác nhận không khớp!'; return; }
+      
+      fetch('http://localhost:8080/api/sinhvien/change-password', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ maSV: maSV, oldPassword: oldPwd, newPassword: newPwd })
+      })
+      .then(res => res.text())
+      .then(data => {
+          if(data === 'SUCCESS') {
+              alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+              localStorage.clear();
+              location.href = 'login.html';
+          } else if(data === 'SAI_MAT_KHAU') {
+              msg.innerText = 'Mật khẩu cũ không chính xác!';
+          } else {
+              msg.innerText = 'Có lỗi xảy ra!';
+          }
+      });
+  }
+</script>
+</body>
+</html>

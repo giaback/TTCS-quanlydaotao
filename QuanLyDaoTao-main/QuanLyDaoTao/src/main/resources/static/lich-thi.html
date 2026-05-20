@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Xem Lịch Thi - PTIT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-header">PTIT ACADEMIC</div>
+    <ul class="menu">
+        <li onclick="location.href='dashboard.html'"><i class="fa-solid fa-house"></i> Trang chủ</li>
+        <li onclick="location.href='dang-ky.html'"><i class="fa-solid fa-pen"></i> Đăng ký môn học</li>
+        <li onclick="location.href='hoc-phi.html'"><i class="fa-solid fa-wallet"></i> Tra cứu học phí</li>
+        <li onclick="location.href='ket-qua.html'"><i class="fa-solid fa-graduation-cap"></i> Kết quả học tập</li>
+        <li class="active" onclick="location.href='lich-thi.html'"><i class="fa-solid fa-calendar-days"></i> Xem lịch thi</li>
+        <li onclick="location.href='thoi-khoa-bieu.html'"><i class="fa-solid fa-calendar-week"></i> Thời khóa biểu</li>
+        <li style="color: #ff9999; margin-top: auto;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+    </ul>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+      <div class="user-profile" onclick="document.getElementById('user-dropdown').classList.toggle('show')">
+          <div class="user-info-top">
+              <div class="name" id="topbar-name">Đang tải...</div>
+              <div class="msv" id="topbar-msv">---</div>
+          </div>
+          <img src="https://ui-avatars.com/api/?name=U&background=bb0000&color=fff" id="topbar-avatar" alt="avatar">
+          <ul class="dropdown-menu" id="user-dropdown">
+              <li><i class="fa-solid fa-address-card"></i> Họ tên: <b id="drop-name">...</b></li>
+              <li><i class="fa-solid fa-id-badge"></i> Tài khoản: <b id="drop-msv">...</b></li>
+              <li style="cursor: pointer;" onclick="location.href='thong-tin.html'"><i class="fa-solid fa-user-gear"></i> Thông tin cá nhân</li>
+              <li style="color: red; cursor: pointer;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+          </ul>
+      </div>
+  </div>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const topMaSV = localStorage.getItem('maSVHienTai');
+          if(topMaSV) {
+              fetch('http://localhost:8080/api/sinhvien/' + topMaSV)
+              .then(res => res.json())
+              .then(data => {
+                  document.getElementById('topbar-name').innerText = data.hoTen;
+                  document.getElementById('topbar-msv').innerText = data.maSV;
+                  document.getElementById('drop-name').innerText = data.hoTen;
+                  document.getElementById('drop-msv').innerText = data.maSV;
+                  document.getElementById('topbar-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.hoTen) + '&background=bb0000&color=fff';
+              }).catch(e => console.log(e));
+          }
+          document.addEventListener('click', function(event) {
+              const profile = document.querySelector('.user-profile');
+              if (profile && !profile.contains(event.target)) {
+                  const dropdown = document.getElementById('user-dropdown');
+                  if(dropdown) dropdown.classList.remove('show');
+              }
+          });
+      });
+  </script>
+    <div class="card">
+        <h2 style="color:var(--ptit-red); margin-top: 0;"><i class="fa-solid fa-calendar-days"></i> LỊCH THI CỦA BẠN</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Mã Môn</th>
+                <th>Môn học</th>
+                <th>Nhóm</th>
+                <th>Ngày thi</th>
+                <th>Ca thi</th>
+                <th>Phòng thi</th>
+            </tr>
+            </thead>
+            <tbody id="ds-lich-thi">
+            <tr><td colspan="6" style="text-align:center">Đang kết nối Database...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const maSV = localStorage.getItem('maSVHienTai');
+        if (!maSV) {
+            alert("Vui lòng đăng nhập lại!");
+            location.href = 'login.html';
+            return;
+        }
+
+        fetch('http://localhost:8080/api/lich-thi/' + maSV)
+            .then(res => res.json())
+            .then(data => {
+                let html = '';
+                if(data.length === 0) {
+                    html = '<tr><td colspan="6" style="text-align:center">Bạn chưa đăng ký môn học nào nên chưa có lịch thi.</td></tr>';
+                } else {
+                    data.forEach(item => {
+                        html += `<tr>
+                                <td><b>${item.maMon}</b></td>
+                                <td>${item.tenMon}</td>
+                                <td>${item.nhom}</td>
+                                <td style="color:red; font-weight:bold">${item.ngayThi}</td>
+                                <td>${item.caThi}</td>
+                                <td><b>${item.phongThi}</b></td>
+                            </tr>`;
+                    });
+                }
+                document.getElementById('ds-lich-thi').innerHTML = html;
+            })
+            .catch(err => {
+                document.getElementById('ds-lich-thi').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Lỗi: Không thể lấy dữ liệu từ Server!</td></tr>';
+            });
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách lớp học - PTIT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-header">PTIT ACADEMIC</div>
+    <ul class="menu">
+        <li onclick="location.href='dashboard.html'"><i class="fa-solid fa-house"></i> Trang chủ</li>
+        <li class="active" onclick="location.href='dang-ky.html'"><i class="fa-solid fa-pen"></i> Đăng ký môn học</li>
+        <li onclick="location.href='hoc-phi.html'"><i class="fa-solid fa-wallet"></i> Tra cứu học phí</li>
+        <li onclick="location.href='ket-qua.html'"><i class="fa-solid fa-graduation-cap"></i> Kết quả học tập</li>
+        <li onclick="location.href='lich-thi.html'"><i class="fa-solid fa-calendar-days"></i> Xem lịch thi</li>
+        <li onclick="location.href='thoi-khoa-bieu.html'"><i class="fa-solid fa-calendar-week"></i> Thời khóa biểu</li>
+        <li style="color: #ff9999; margin-top: auto;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+    </ul>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+      <div class="user-profile" onclick="document.getElementById('user-dropdown').classList.toggle('show')">
+          <div class="user-info-top">
+              <div class="name" id="topbar-name">Đang tải...</div>
+              <div class="msv" id="topbar-msv">---</div>
+          </div>
+          <img src="https://ui-avatars.com/api/?name=U&background=bb0000&color=fff" id="topbar-avatar" alt="avatar">
+          <ul class="dropdown-menu" id="user-dropdown">
+              <li><i class="fa-solid fa-address-card"></i> Họ tên: <b id="drop-name">...</b></li>
+              <li><i class="fa-solid fa-id-badge"></i> Tài khoản: <b id="drop-msv">...</b></li>
+              <li style="cursor: pointer;" onclick="location.href='thong-tin.html'"><i class="fa-solid fa-user-gear"></i> Thông tin cá nhân</li>
+              <li style="color: red; cursor: pointer;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+          </ul>
+      </div>
+  </div>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const topMaSV = localStorage.getItem('maSVHienTai');
+          if(topMaSV) {
+              fetch('http://localhost:8080/api/sinhvien/' + topMaSV)
+              .then(res => res.json())
+              .then(data => {
+                  document.getElementById('topbar-name').innerText = data.hoTen;
+                  document.getElementById('topbar-msv').innerText = data.maSV;
+                  document.getElementById('drop-name').innerText = data.hoTen;
+                  document.getElementById('drop-msv').innerText = data.maSV;
+                  document.getElementById('topbar-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.hoTen) + '&background=bb0000&color=fff';
+              }).catch(e => console.log(e));
+          }
+          document.addEventListener('click', function(event) {
+              const profile = document.querySelector('.user-profile');
+              if (profile && !profile.contains(event.target)) {
+                  const dropdown = document.getElementById('user-dropdown');
+                  if(dropdown) dropdown.classList.remove('show');
+              }
+          });
+      });
+  </script>
+    <div class="card">
+        <h2 style="color:var(--ptit-red); margin-top: 0;">DANH SÁCH LỚP HỌC PHẦN MỞ ĐĂNG KÝ</h2>
+        <table>
+            <thead>
+            <tr>
+                <th style="width: 5%; text-align: center;">Chọn</th>
+                <th style="width: 15%;">Mã Môn</th>
+                <th style="width: 30%;">Môn học</th>
+                <th style="width: 10%; text-align: center;">Tín chỉ</th>
+                <th style="width: 10%; text-align: center;">Nhóm</th>
+                <th style="width: 30%;">Giảng Viên</th>
+            </tr>
+            </thead>
+            <tbody id="ds-lop">
+            <tr><td colspan="6" style="text-align:center">Đang kết nối Database...</td></tr>
+            </tbody>
+        </table>
+        <div style="margin-top: 20px; text-align: right;">
+            <button onclick="submitDangKy()" style="padding: 12px 25px; background: var(--ptit-red); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px;">
+                <i class="fa-solid fa-check"></i> Xác nhận đăng ký
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const maSV = localStorage.getItem('maSVHienTai');
+        if (!maSV) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        // Lấy danh sách ID lớp đã đăng ký
+        fetch(`http://localhost:8080/api/dang-ky/${maSV}`)
+            .then(res => res.json())
+            .then(registeredIds => {
+                // Lấy tất cả lớp học phần
+                fetch('http://localhost:8080/api/lop-hoc-phan/all')
+                    .then(res => res.json())
+                    .then(data => {
+                        let html = '';
+                        if(data.length === 0) {
+                            html = '<tr><td colspan="6" style="text-align:center">Không có dữ liệu trong Database</td></tr>';
+                        } else {
+                            data.forEach(item => {
+                                const isRegistered = registeredIds.includes(item.idLop);
+                                const checkedAttr = isRegistered ? 'checked' : '';
+                                const bgStyle = isRegistered ? 'background-color: #e8f5e9;' : ''; // Nền xanh nhạt nếu đã đky
+                                const textStyle = isRegistered ? 'font-weight: bold; color: #2e7d32;' : '';
+                                
+                                html += `<tr style="${bgStyle}">
+                                        <td style="text-align: center;">
+                                            <input type="checkbox" class="chk-lop" value="${item.idLop}" ${checkedAttr} style="transform: scale(1.2); cursor: pointer;">
+                                        </td>
+                                        <td style="${textStyle}"><b>${item.maMon}</b></td>
+                                        <td style="${textStyle}">${item.tenMon} ${isRegistered ? '<span style="color:red; font-size:12px;">(Đã đăng ký)</span>' : ''}</td>
+                                        <td style="${textStyle}; text-align: center;">${item.soTinChi}</td>
+                                        <td style="${textStyle}; text-align: center;">${item.nhom}</td>
+                                        <td style="${textStyle}">${item.giangVien}</td>
+                                    </tr>`;
+                            });
+                        }
+                        document.getElementById('ds-lop').innerHTML = html;
+                    })
+                    .catch(err => {
+                        document.getElementById('ds-lop').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Lỗi: Không thể lấy dữ liệu từ Server!</td></tr>';
+                    });
+            });
+    };
+
+    function submitDangKy() {
+        const maSV = localStorage.getItem('maSVHienTai');
+        if (!maSV) {
+            alert("Vui lòng đăng nhập lại!");
+            return;
+        }
+
+        const checkboxes = document.querySelectorAll('.chk-lop:checked');
+        if (checkboxes.length < 4) {
+            alert("Bạn phải chọn tối thiểu 4 môn học!");
+            return;
+        }
+
+        const idLops = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+        fetch('http://localhost:8080/api/dang-ky', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                maSV: maSV,
+                idLops: idLops
+            })
+        })
+        .then(res => res.text())
+        .then(data => {
+            if (data === "SUCCESS") {
+                alert("Đăng ký môn học thành công! Học phí đã được tính lại.");
+                location.reload();
+            } else {
+                alert(data);
+            }
+        })
+        .catch(err => {
+            alert("Lỗi kết nối tới Server!");
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thời Khóa Biểu - PTIT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">PTIT ACADEMIC</div>
+    <ul class="menu">
+        <li onclick="location.href='dashboard.html'"><i class="fa-solid fa-house"></i> Trang chủ</li>
+        <li onclick="location.href='dang-ky.html'"><i class="fa-solid fa-pen"></i> Đăng ký môn học</li>
+        <li onclick="location.href='hoc-phi.html'"><i class="fa-solid fa-wallet"></i> Tra cứu học phí</li>
+        <li onclick="location.href='ket-qua.html'"><i class="fa-solid fa-graduation-cap"></i> Kết quả học tập</li>
+        <li onclick="location.href='lich-thi.html'"><i class="fa-solid fa-calendar-days"></i> Xem lịch thi</li>
+        <li class="active" onclick="location.href='thoi-khoa-bieu.html'"><i class="fa-solid fa-calendar-week"></i> Thời khóa biểu</li>
+        <li style="color: #ff9999; margin-top: auto;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+    </ul>
+</div>
+
+
+<div class="main-content">
+  <div class="topbar">
+      <div class="user-profile" onclick="document.getElementById('user-dropdown').classList.toggle('show')">
+          <div class="user-info-top">
+              <div class="name" id="topbar-name">Đang tải...</div>
+              <div class="msv" id="topbar-msv">---</div>
+          </div>
+          <img src="https://ui-avatars.com/api/?name=U&background=bb0000&color=fff" id="topbar-avatar" alt="avatar">
+          <ul class="dropdown-menu" id="user-dropdown">
+              <li><i class="fa-solid fa-address-card"></i> Họ tên: <b id="drop-name">...</b></li>
+              <li><i class="fa-solid fa-id-badge"></i> Tài khoản: <b id="drop-msv">...</b></li>
+              <li style="cursor: pointer;" onclick="location.href='thong-tin.html'"><i class="fa-solid fa-user-gear"></i> Thông tin cá nhân</li>
+              <li style="color: red; cursor: pointer;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+          </ul>
+      </div>
+  </div>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const topMaSV = localStorage.getItem('maSVHienTai');
+          if(topMaSV) {
+              fetch('http://localhost:8080/api/sinhvien/' + topMaSV)
+              .then(res => res.json())
+              .then(data => {
+                  document.getElementById('topbar-name').innerText = data.hoTen;
+                  document.getElementById('topbar-msv').innerText = data.maSV;
+                  document.getElementById('drop-name').innerText = data.hoTen;
+                  document.getElementById('drop-msv').innerText = data.maSV;
+                  document.getElementById('topbar-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.hoTen) + '&background=bb0000&color=fff';
+              }).catch(e => console.log(e));
+          }
+          document.addEventListener('click', function(event) {
+              const profile = document.querySelector('.user-profile');
+              if (profile && !profile.contains(event.target)) {
+                  const dropdown = document.getElementById('user-dropdown');
+                  if(dropdown) dropdown.classList.remove('show');
+              }
+          });
+      });
+  </script>
+    <div class="header">
+        <h2><i class="fa-solid fa-calendar-week"></i> LỊCH HỌC TRONG TUẦN</h2>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top: 0;">Danh sách lớp học phần đã đăng ký</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Mã Môn</th>
+                    <th style="width: 30%;">Tên Môn</th>
+                    <th style="width: 10%;">Thứ</th>
+                    <th style="width: 15%;">Tiết Bắt Đầu</th>
+                    <th style="width: 10%;">Số Tiết</th>
+                    <th style="width: 20%;">Thời Gian Cụ Thể</th>
+                </tr>
+            </thead>
+            <tbody id="list-tkb">
+                <tr><td colspan="6" style="text-align: center;">Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function logout() {
+        localStorage.removeItem('maSVHienTai');
+        window.location.href = 'login.html';
+    }
+
+    window.onload = function() {
+        const maSV = localStorage.getItem('maSVHienTai');
+        if (!maSV) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        fetch(`http://localhost:8080/api/thoi-khoa-bieu/${maSV}`)
+            .then(res => res.json())
+            .then(data => {
+                let html = '';
+                if(data.length === 0) {
+                    html = '<tr><td colspan="6" style="text-align:center">Sinh viên chưa đăng ký môn học nào hoặc chưa có lịch học.</td></tr>';
+                } else {
+                    // Cố gắng sắp xếp thời khóa biểu theo thứ, rồi theo tiết bắt đầu
+                    data.sort((a, b) => {
+                        let valA = a.thu ? a.thu.replace(/[^0-9]/g, '') : '9';
+                        let valB = b.thu ? b.thu.replace(/[^0-9]/g, '') : '9';
+                        if (a.thu === 'Chủ nhật') valA = '8';
+                        if (b.thu === 'Chủ nhật') valB = '8';
+                        
+                        let numA = parseInt(valA) || 9;
+                        let numB = parseInt(valB) || 9;
+                        
+                        if (numA === numB) {
+                            return (a.tietBatDau || 0) - (b.tietBatDau || 0);
+                        }
+                        return numA - numB;
+                    });
+
+                    data.forEach(item => {
+                        html += `<tr>
+                                <td><b>${item.maMon}</b></td>
+                                <td style="text-align: left;">${item.tenMon} (Nhóm ${item.nhom})</td>
+                                <td><span style="color:var(--ptit-red); font-weight:bold">${item.thu}</span></td>
+                                <td>Tiết ${item.tietBatDau}</td>
+                                <td>${item.soTiet}</td>
+                                <td>${item.thoiGianHoc}</td>
+                            </tr>`;
+                    });
+                }
+                document.getElementById('list-tkb').innerHTML = html;
+            })
+            .catch(err => {
+                document.getElementById('list-tkb').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Lỗi kết nối Server!</td></tr>';
+            });
+    }
+</script>
+
+</body>
+</html>
