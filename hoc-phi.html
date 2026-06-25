@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết Học phí - PTIT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-header">PTIT ACADEMIC</div>
+    <ul class="menu">
+        <li onclick="location.href='dashboard.html'"><i class="fa-solid fa-house"></i> Trang chủ</li>
+        <li onclick="location.href='dang-ky.html'"><i class="fa-solid fa-pen"></i> Đăng ký môn học</li>
+        <li class="active" onclick="location.href='hoc-phi.html'"><i class="fa-solid fa-wallet"></i> Tra cứu học phí</li>
+        <li onclick="location.href='ket-qua.html'"><i class="fa-solid fa-graduation-cap"></i> Kết quả học tập</li>
+        <li onclick="location.href='lich-thi.html'"><i class="fa-solid fa-calendar-days"></i> Xem lịch thi</li>
+        <li onclick="location.href='thoi-khoa-bieu.html'"><i class="fa-solid fa-calendar-week"></i> Thời khóa biểu</li>
+        <li style="color: #ff9999; margin-top: auto;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+    </ul>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+      <div class="user-profile" onclick="document.getElementById('user-dropdown').classList.toggle('show')">
+          <div class="user-info-top">
+              <div class="name" id="topbar-name">Đang tải...</div>
+              <div class="msv" id="topbar-msv">---</div>
+          </div>
+          <img src="https://ui-avatars.com/api/?name=U&background=bb0000&color=fff" id="topbar-avatar" alt="avatar">
+          <ul class="dropdown-menu" id="user-dropdown">
+              <li><i class="fa-solid fa-address-card"></i> Họ tên: <b id="drop-name">...</b></li>
+              <li><i class="fa-solid fa-id-badge"></i> Tài khoản: <b id="drop-msv">...</b></li>
+              <li style="cursor: pointer;" onclick="location.href='thong-tin.html'"><i class="fa-solid fa-user-gear"></i> Thông tin cá nhân</li>
+              <li style="color: red; cursor: pointer;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+          </ul>
+      </div>
+  </div>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const topMaSV = localStorage.getItem('maSVHienTai');
+          if(topMaSV) {
+              fetch('api/sinhvien/' + topMaSV)
+              .then(res => res.json())
+              .then(data => {
+                  document.getElementById('topbar-name').innerText = data.hoTen;
+                  document.getElementById('topbar-msv').innerText = data.maSV;
+                  document.getElementById('drop-name').innerText = data.hoTen;
+                  document.getElementById('drop-msv').innerText = data.maSV;
+                  document.getElementById('topbar-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.hoTen) + '&background=bb0000&color=fff';
+              }).catch(e => console.log(e));
+          }
+          document.addEventListener('click', function(event) {
+              const profile = document.querySelector('.user-profile');
+              if (profile && !profile.contains(event.target)) {
+                  const dropdown = document.getElementById('user-dropdown');
+                  if(dropdown) dropdown.classList.remove('show');
+              }
+          });
+      });
+  </script>
+    <div class="card">
+        <h2 style="color:var(--ptit-red)"><i class="fa-solid fa-file-invoice-dollar"></i> CHI TIẾT CÔNG NỢ HỌC PHÍ</h2>
+        <table>
+            <thead>
+                <tr><th>Học kỳ</th><th>Số tiền phải nộp</th><th>Đã nộp</th><th>Còn nợ</th><th>Trạng thái</th></tr>
+            </thead>
+            <tbody id="list-hoc-phi"></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2 style="color:var(--ptit-red)"><i class="fa-solid fa-list-check"></i> CÁC MÔN HỌC ĐÃ ĐĂNG KÝ</h2>
+        <table>
+            <thead>
+                <tr><th>Mã Môn</th><th>Tên Môn</th><th>Số Tín Chỉ</th><th>Thành Tiền</th></tr>
+            </thead>
+            <tbody id="list-mon-hoc">
+                <tr><td colspan="4" style="text-align:center">Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Đóng học phí ảo (Test)</h3>
+        <div style="display: flex; gap: 10px;">
+            <input type="number" id="pay-amount" placeholder="Nhập số tiền..." style="padding: 10px; flex-grow: 1;">
+            <button onclick="handlePay()" style="padding: 10px 20px; background: var(--ptit-red); color: white; border: none; border-radius: 4px; cursor: pointer;">Xác nhận đóng</button>
+        </div>
+    </div>
+</div>
+<script>
+    function loadData() {
+        const maSV = localStorage.getItem('maSVHienTai');
+        if(!maSV) { window.location.href="login.html"; return; }
+
+        // Load tổng học phí
+        fetch(`api/hoc-phi/${maSV}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.status === "UNLOCKED") {
+                    const cards = document.querySelectorAll('.card');
+                    cards[0].innerHTML = '<div style="text-align:center; padding: 50px; font-size: 18px; color: #bb0000; font-weight: bold;"><i class="fa-solid fa-lock-open fa-3x" style="margin-bottom:15px;"></i><br>Chưa có dữ liệu.<br>Vui lòng sang trang Đăng ký môn học và Xác nhận Khóa Đăng ký (Chốt sổ) để xem và nộp học phí!</div>';
+                    if(cards[1]) cards[1].style.display = 'none';
+                    if(cards[2]) cards[2].style.display = 'none';
+                    return;
+                }
+                
+                if(data) {
+                    const stColor = data.trangThai === "Đã nộp" ? "green" : "orange";
+                    const stText = data.trangThai === "Đã nộp" ? "Đã thanh toán" : (data.trangThai === "Đã nộp một phần" ? "Đã nộp một phần" : "Chưa thanh toán");
+                    const conNo = data.soTienPhaiNop - data.soTienDaNop;
+                    document.getElementById('list-hoc-phi').innerHTML = `
+                            <tr>
+                                <td>${data.hocKy}</td>
+                                <td style="color:red; font-weight:bold">${Number(data.soTienPhaiNop).toLocaleString('vi-VN')} VNĐ</td>
+                                <td style="color:blue; font-weight:bold">${Number(data.soTienDaNop).toLocaleString('vi-VN')} VNĐ</td>
+                                <td style="color:orange; font-weight:bold">${Number(conNo).toLocaleString('vi-VN')} VNĐ</td>
+                                <td><span style="color:${stColor}; font-weight:bold">${stText}</span></td>
+                            </tr>`;
+                } else {
+                    document.getElementById('list-hoc-phi').innerHTML = '<tr><td colspan="5" style="text-align:center">Chưa có dữ liệu học phí</td></tr>';
+                }
+            });
+
+        // Load chi tiết môn đăng ký
+        fetch(`api/dang-ky/chi-tiet/${maSV}`)
+            .then(res => res.json())
+            .then(data => {
+                let html = '';
+                if(data.length === 0) {
+                    html = '<tr><td colspan="4" style="text-align:center">Bạn chưa đăng ký môn học nào.</td></tr>';
+                } else {
+                    data.forEach(item => {
+                        html += `<tr>
+                                <td><b>${item.maMon}</b></td>
+                                <td>${item.tenMon}</td>
+                                <td>${item.soTinChi}</td>
+                                <td style="color:red; font-weight:bold">${Number(item.thanhTien).toLocaleString('vi-VN')} VNĐ</td>
+                            </tr>`;
+                    });
+                }
+                document.getElementById('list-mon-hoc').innerHTML = html;
+            })
+            .catch(err => {
+                document.getElementById('list-mon-hoc').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Lỗi kết nối Server!</td></tr>';
+            });
+    }
+
+   function handlePay() {
+    const maSV = localStorage.getItem('maSVHienTai');
+    const amount = document.getElementById('pay-amount').value;
+    if(!amount || amount <= 0) { alert("Vui lòng nhập số tiền!"); return; }
+
+    fetch('api/hoc-phi/pay', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ maSV: maSV, amount: parseFloat(amount) })
+    })
+    .then(res => {
+        if(!res.ok) throw new Error("Lỗi Server (API không tồn tại hoặc lỗi code)");
+        return res.json();
+    })
+    .then(d => {
+        alert(d.message);
+        location.reload();
+    })
+    .catch(err => {
+        alert("Lỗi: " + err.message + ". Hãy kiểm tra xem Server Java có đang báo lỗi đỏ không!");
+    });
+}
+
+    window.onload = loadData;
+</script>
+</body>
+</html>

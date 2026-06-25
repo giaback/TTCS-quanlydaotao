@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Kết quả học tập - PTIT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-header">PTIT ACADEMIC</div>
+    <ul class="menu">
+        <li onclick="location.href='dashboard.html'"><i class="fa-solid fa-house"></i> Trang chủ</li>
+        <li onclick="location.href='dang-ky.html'"><i class="fa-solid fa-pen"></i> Đăng ký môn học</li>
+        <li onclick="location.href='hoc-phi.html'"><i class="fa-solid fa-wallet"></i> Tra cứu học phí</li>
+        <li class="active" onclick="location.href='ket-qua.html'"><i class="fa-solid fa-graduation-cap"></i> Kết quả học tập</li>
+        <li onclick="location.href='lich-thi.html'"><i class="fa-solid fa-calendar-days"></i> Xem lịch thi</li>
+        <li onclick="location.href='thoi-khoa-bieu.html'"><i class="fa-solid fa-calendar-week"></i> Thời khóa biểu</li>
+        <li style="color: #ff9999; margin-top: auto;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+    </ul>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+      <div class="user-profile" onclick="document.getElementById('user-dropdown').classList.toggle('show')">
+          <div class="user-info-top">
+              <div class="name" id="topbar-name">Đang tải...</div>
+              <div class="msv" id="topbar-msv">---</div>
+          </div>
+          <img src="https://ui-avatars.com/api/?name=U&background=bb0000&color=fff" id="topbar-avatar" alt="avatar">
+          <ul class="dropdown-menu" id="user-dropdown">
+              <li><i class="fa-solid fa-address-card"></i> Họ tên: <b id="drop-name">...</b></li>
+              <li><i class="fa-solid fa-id-badge"></i> Tài khoản: <b id="drop-msv">...</b></li>
+              <li style="cursor: pointer;" onclick="location.href='thong-tin.html'"><i class="fa-solid fa-user-gear"></i> Thông tin cá nhân</li>
+              <li style="color: red; cursor: pointer;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+          </ul>
+      </div>
+  </div>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const topMaSV = localStorage.getItem('maSVHienTai');
+          if(topMaSV) {
+              fetch('api/sinhvien/' + topMaSV)
+              .then(res => res.json())
+              .then(data => {
+                  document.getElementById('topbar-name').innerText = data.hoTen;
+                  document.getElementById('topbar-msv').innerText = data.maSV;
+                  document.getElementById('drop-name').innerText = data.hoTen;
+                  document.getElementById('drop-msv').innerText = data.maSV;
+                  document.getElementById('topbar-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.hoTen) + '&background=bb0000&color=fff';
+              }).catch(e => console.log(e));
+          }
+          document.addEventListener('click', function(event) {
+              const profile = document.querySelector('.user-profile');
+              if (profile && !profile.contains(event.target)) {
+                  const dropdown = document.getElementById('user-dropdown');
+                  if(dropdown) dropdown.classList.remove('show');
+              }
+          });
+      });
+  </script>
+    <div class="card">
+        <h2 style="color:var(--ptit-red)">BẢNG ĐIỂM CHI TIẾT</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Mã Môn</th> <th>Học kỳ</th> <th>Tổng kết (10)</th> <th>Tổng kết (4)</th> <th>Điểm chữ</th>
+            </tr>
+            </thead>
+            <tbody id="list-diem"></tbody>
+        </table>
+    </div>
+</div>
+<script>
+    window.onload = function() {
+        const maSV = localStorage.getItem('maSVHienTai');
+        if(!maSV) { window.location.href="login.html"; return; }
+
+        fetch(`api/ket-qua/${maSV}`)
+            .then(res => res.json())
+            .then(data => {
+                let html = '';
+                data.forEach(item => {
+                    html += `<tr>
+                            <td>${item.maMon}</td>
+                            <td>${item.hocKy}</td>
+                            <td>${item.diemTk10}</td>
+                            <td><b>${item.diemTk4}</b></td>
+                            <td style="color:red; font-weight:bold">${item.diemTkChu}</td>
+                        </tr>`;
+                });
+                document.getElementById('list-diem').innerHTML = html || '<tr><td colspan="5" style="text-align:center">Chưa có điểm</td></tr>';
+            })
+            .catch(err => document.getElementById('list-diem').innerHTML = '<tr><td colspan="5" style="text-align:center">Lỗi kết nối Server</td></tr>');
+    }
+</script>
+</body>
+</html>

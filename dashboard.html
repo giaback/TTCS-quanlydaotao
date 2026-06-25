@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>PTIT Academic - Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-header">PTIT ACADEMIC</div>
+    <ul class="menu">
+        <li class="active" onclick="location.href='dashboard.html'"><i class="fa-solid fa-house"></i> Trang chủ</li>
+        <li onclick="location.href='dang-ky.html'"><i class="fa-solid fa-pen"></i> Đăng ký môn học</li>
+        <li onclick="location.href='hoc-phi.html'"><i class="fa-solid fa-wallet"></i> Tra cứu học phí</li>
+        <li onclick="location.href='ket-qua.html'"><i class="fa-solid fa-graduation-cap"></i> Kết quả học tập</li>
+        <li onclick="location.href='lich-thi.html'"><i class="fa-solid fa-calendar-days"></i> Xem lịch thi</li>
+        <li onclick="location.href='thoi-khoa-bieu.html'"><i class="fa-solid fa-calendar-week"></i> Thời khóa biểu</li>
+        <li style="color: #ff9999; margin-top: auto;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+    </ul>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+      <div class="user-profile" onclick="document.getElementById('user-dropdown').classList.toggle('show')">
+          <div class="user-info-top">
+              <div class="name" id="topbar-name">Đang tải...</div>
+              <div class="msv" id="topbar-msv">---</div>
+          </div>
+          <img src="https://ui-avatars.com/api/?name=U&background=bb0000&color=fff" id="topbar-avatar" alt="avatar">
+          <ul class="dropdown-menu" id="user-dropdown">
+              <li><i class="fa-solid fa-address-card"></i> Họ tên: <b id="drop-name">...</b></li>
+              <li><i class="fa-solid fa-id-badge"></i> Tài khoản: <b id="drop-msv">...</b></li>
+              <li style="cursor: pointer;" onclick="location.href='thong-tin.html'"><i class="fa-solid fa-user-gear"></i> Thông tin cá nhân</li>
+              <li style="color: red; cursor: pointer;" onclick="localStorage.clear(); location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+          </ul>
+      </div>
+  </div>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const topMaSV = localStorage.getItem('maSVHienTai');
+          if(topMaSV) {
+              fetch('api/sinhvien/' + topMaSV)
+              .then(res => res.json())
+              .then(data => {
+                  document.getElementById('topbar-name').innerText = data.hoTen;
+                  document.getElementById('topbar-msv').innerText = data.maSV;
+                  document.getElementById('drop-name').innerText = data.hoTen;
+                  document.getElementById('drop-msv').innerText = data.maSV;
+                  document.getElementById('topbar-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.hoTen) + '&background=bb0000&color=fff';
+              }).catch(e => console.log(e));
+          }
+          document.addEventListener('click', function(event) {
+              const profile = document.querySelector('.user-profile');
+              if (profile && !profile.contains(event.target)) {
+                  const dropdown = document.getElementById('user-dropdown');
+                  if(dropdown) dropdown.classList.remove('show');
+              }
+          });
+      });
+  </script>
+  <h2>Xin chào, <span id="user-name">Đang tải...</span></h2>
+
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <div class="card">
+      <h3 style="margin-top: 0;"><i class="fa-solid fa-id-card"></i> Thông tin sinh viên</h3>
+      <p>Mã SV: <b id="user-msv">---</b></p>
+      <p>Lớp: <b id="user-lop">---</b></p>
+      <p>Ngành: <b id="user-nganh">---</b></p>
+      <p>Số dư ví: <b id="user-balance" style="color: #2c3e50;">0 VNĐ</b></p>
+    </div>
+    <div class="card">
+      <h3><i class="fa-solid fa-money-bill-wave"></i> Học phí học kỳ này</h3>
+      <h2 id="user-hp" style="color:var(--ptit-red)">0 VNĐ</h2>
+      <p id="hp-ky">---</p>
+    </div>
+  </div>
+</div>
+<script>
+  window.onload = function() {
+    const maSV = localStorage.getItem('maSVHienTai');
+    if(!maSV) { location.href = 'login.html'; return; }
+
+    fetch(`api/sinhvien/${maSV}`)
+            .then(res => res.json())
+            .then(data => {
+              document.getElementById('user-name').innerText = data.hoTen;
+              document.getElementById('user-msv').innerText = data.maSV;
+              document.getElementById('user-lop').innerText = data.lop;
+              document.getElementById('user-nganh').innerText = data.nganh;
+              document.getElementById('user-balance').innerText = data.balance.toLocaleString() + " VNĐ";
+            });
+
+    fetch(`api/hoc-phi/${maSV}`)
+            .then(res => res.json())
+            .then(data => {
+              const hpEl = document.getElementById('user-hp');
+              const kyEl = document.getElementById('hp-ky');
+              
+              if(data && data.status === "UNLOCKED") {
+                  hpEl.innerText = "Chưa chốt đăng ký";
+                  hpEl.style.color = "orange";
+                  hpEl.style.fontSize = "20px";
+                  kyEl.innerText = "Vui lòng chốt sổ đăng ký môn học";
+              } else if(data) {
+                if(data.trangThai === "Đã nộp") {
+                    hpEl.innerText = "Học phí còn lại: 0đ";
+                    hpEl.style.color = "green";
+                } else {
+                    hpEl.innerText = Number(data.soTienPhaiNop).toLocaleString('vi-VN') + " VNĐ";
+                    hpEl.style.color = "#bb0000";
+                }
+                kyEl.innerText = data.hocKy;
+              } else {
+                  hpEl.innerText = "0 VNĐ";
+                  kyEl.innerText = "Chưa có dữ liệu";
+              }
+            });
+  }
+</script>
+</body>
+</html>
