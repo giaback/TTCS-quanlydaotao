@@ -718,8 +718,8 @@
                     const col = dayToCol[item.thu.trim()] || 2;
                     
                     // Match row ranges
-                    const startRow = (item.tietBatDau || 1) + 1;
-                    const endRow = startRow + (item.soTiet || 2);
+                    const startRow = parseInt(item.tietBatDau || 1) + 1;
+                    const endRow = startRow + parseInt(item.soTiet || 2);
                     
                     // Create card
                     const card = document.createElement('div');
