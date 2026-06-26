@@ -78,6 +78,5 @@ CREATE TABLE IF NOT EXISTS `hoc_phi` (
     FOREIGN KEY (`ma_sv`) REFERENCES `sinh_vien`(`ma_sv`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Thêm một user admin giả lập
 INSERT IGNORE INTO `sinh_vien` (`ma_sv`, `ho_ten`, `ngay_sinh`, `gioi_tinh`, `noi_sinh`, `so_dien_thoai`, `lop`, `nganh`, `balance`) VALUES
 ('admin', 'Administrator', '2000-01-01', 'Nam', 'Hà Nội', '0123456789', 'Admin', 'Admin', 10000000.0);

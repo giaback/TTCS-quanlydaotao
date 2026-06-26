@@ -30,15 +30,15 @@
             fetch('api/sinhvien/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: maSV, password: sdt }) // username chính là Mã SV
+                body: JSON.stringify({ username: maSV, password: sdt })
             })
                 .then(response => response.text())
                 .then(ketQua => {
                     if (ketQua === "SUCCESS") {
-                        // LƯU MÃ SV VÀO BỘ NHỚ TRÌNH DUYỆT ĐỂ SANG TRANG SAU DÙNG
+
                         localStorage.setItem('maSVHienTai', maSV);
                         alert("🎉 Đăng nhập thành công!");
-                        window.location.href = "dashboard.html"; // Chuyển sang dashboard
+                        window.location.href = "dashboard.html";
                     } else {
                         alert("❌ Sai Mã sinh viên hoặc Số điện thoại!");
                     }

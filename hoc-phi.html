@@ -95,7 +95,7 @@
         const maSV = localStorage.getItem('maSVHienTai');
         if(!maSV) { window.location.href="login.html"; return; }
 
-        // Load tổng học phí
+
         fetch(`api/hoc-phi/${maSV}`)
             .then(res => res.json())
             .then(data => {
@@ -124,7 +124,7 @@
                 }
             });
 
-        // Load chi tiết môn đăng ký
+
         fetch(`api/dang-ky/chi-tiet/${maSV}`)
             .then(res => res.json())
             .then(data => {

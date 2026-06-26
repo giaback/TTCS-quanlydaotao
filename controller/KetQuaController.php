@@ -1,5 +1,4 @@
 <?php
-require_once '../config/database.php';
 
 function ketqua_getByMaSV($pdo, $maSV) {
     $stmt = $pdo->prepare("
@@ -15,3 +14,4 @@ function ketqua_getByMaSV($pdo, $maSV) {
     echo json_encode($stmt->fetchAll());
 }
 ?>
+

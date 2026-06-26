@@ -11,13 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-require_once 'SinhVienController.php';
-require_once 'DangKyController.php';
-require_once 'HocPhiController.php';
-require_once 'LopHocPhanController.php';
-require_once 'KetQuaController.php';
-require_once 'LichThiController.php';
-require_once 'ThoiKhoaBieuController.php';
+require_once '../config/database.php';
+require_once '../controller/SinhVienController.php';
+require_once '../controller/DangKyController.php';
+require_once '../controller/HocPhiController.php';
+require_once '../controller/LopHocPhanController.php';
+require_once '../controller/KetQuaController.php';
+require_once '../controller/LichThiController.php';
+require_once '../controller/ThoiKhoaBieuController.php';
 
 $path   = isset($_GET['path']) ? $_GET['path'] : '';
 $method = $_SERVER['REQUEST_METHOD'];

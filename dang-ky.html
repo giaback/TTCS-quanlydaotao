@@ -100,7 +100,7 @@
             return;
         }
 
-        // Kiem tra trang thai lock truoc
+
         fetch('api/sinhvien/' + maSV)
         .then(res => res.json())
         .then(sv => {
@@ -142,12 +142,12 @@
                 btnSubmit.innerHTML = '<i class="fa-solid fa-lock"></i> Đã khóa đăng ký';
             }
             
-            // Disable all checkboxes
+
             document.querySelectorAll('.chk-lop').forEach(chk => {
                 chk.disabled = true;
             });
         } else {
-            // Hien thi dong ho dem nguoc
+
             const mins = Math.floor(diff / 60000);
             const secs = Math.floor((diff % 60000) / 1000);
             timerText.style.color = '#e65100';
@@ -156,11 +156,11 @@
     }
 
     function loadLopHocPhan(maSV) {
-        // Lấy danh sách ID lớp đã đăng ký
+
         fetch(`api/dang-ky/${maSV}`)
             .then(res => res.json())
             .then(registeredIds => {
-                // Lấy tất cả lớp học phần
+
                 fetch('api/lop-hoc-phan/all')
                     .then(res => res.json())
                     .then(data => {
@@ -171,7 +171,7 @@
                             data.forEach(item => {
                                 const isRegistered = registeredIds.includes(item.idLop);
                                 const checkedAttr = isRegistered ? 'checked' : '';
-                                const bgStyle = isRegistered ? 'background-color: #e8f5e9;' : ''; // Nền xanh nhạt nếu đã đky
+                                const bgStyle = isRegistered ? 'background-color: #e8f5e9;' : '';
                                 const textStyle = isRegistered ? 'font-weight: bold; color: #2e7d32;' : '';
                                 const disableAttr = isLocked ? 'disabled' : '';
                                 

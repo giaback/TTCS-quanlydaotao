@@ -1,5 +1,5 @@
 <?php
-require_once '../config/database.php';
+require_once '../config/database.php'; // Included via index.php
 
 function sinhvien_login($pdo, $requestData) {
     $username = $requestData['username'] ?? '';
@@ -67,3 +67,5 @@ function sinhvien_changePassword($pdo, $requestData) {
     echo "SUCCESS";
 }
 ?>
+
+

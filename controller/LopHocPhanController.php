@@ -1,5 +1,4 @@
 <?php
-require_once '../config/database.php';
 
 function lophocphan_getAll($pdo) {
     $stmt = $pdo->prepare("
@@ -12,3 +11,4 @@ function lophocphan_getAll($pdo) {
     echo json_encode($stmt->fetchAll());
 }
 ?>
+

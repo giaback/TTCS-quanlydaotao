@@ -1,5 +1,4 @@
 <?php
-require_once '../config/database.php';
 
 function hocphi_get($pdo, $maSV) {
     $stmt = $pdo->prepare("SELECT lock_time FROM sinh_vien WHERE ma_sv = ?");
@@ -52,3 +51,4 @@ function hocphi_pay($pdo, $requestData) {
     echo json_encode(["status" => "SUCCESS"]);
 }
 ?>
+

@@ -1,5 +1,4 @@
 <?php
-require_once '../config/database.php';
 
 function dangky_getByMaSV($pdo, $maSV) {
     $stmt = $pdo->prepare("SELECT id_lop FROM dang_ky WHERE ma_sv = ?");
@@ -97,3 +96,4 @@ function _dangky_tinhLaiHocPhi($pdo, $maSV) {
     }
 }
 ?>
+

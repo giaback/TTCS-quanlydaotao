@@ -41,7 +41,7 @@
       <h2 style="margin: 0; color: #cc8800;"><i class="fa-solid fa-hand-sparkles"></i> Chào mừng <span id="welcome-name">...</span></h2>
   </div>
 
-  <!-- Card Thông tin sinh viên -->
+
   <div class="card">
       <div class="card-header">
           <span><i class="fa-solid fa-user"></i> Thông tin sinh viên</span>
@@ -77,7 +77,7 @@
       </div>
   </div>
 
-  <!-- Card Thông tin khóa học -->
+
   <div class="card">
       <div class="card-header"><i class="fa-solid fa-graduation-cap"></i> Thông tin khóa học</div>
       <div class="card-body">
@@ -95,7 +95,7 @@
       </div>
   </div>
 
-  <!-- Card Biểu đồ -->
+
   <div class="card">
       <div class="card-header"><i class="fa-solid fa-chart-bar"></i> Biểu đồ kết quả học tập</div>
       <div class="card-body" style="height: 300px; display: flex; justify-content: center;">
@@ -104,7 +104,7 @@
   </div>
 </div>
 
-<!-- Modal Sửa Thông Tin -->
+
 <div class="modal" id="editModal">
     <div class="modal-content">
         <div class="modal-header">Chỉnh sửa thông tin cá nhân</div>
@@ -128,7 +128,7 @@
     </div>
 </div>
 
-<!-- Modal Đổi Mật Khẩu -->
+
 <div class="modal" id="pwdModal">
     <div class="modal-content">
         <div class="modal-header">Đổi mật khẩu (Số điện thoại)</div>
@@ -160,7 +160,6 @@
       loadInfo();
       loadChart();
       
-      // Topbar logic
       document.addEventListener('click', function(event) {
           const profile = document.querySelector('.user-profile');
           if (profile && !profile.contains(event.target)) {
@@ -174,7 +173,6 @@
     fetch(`api/sinhvien/${maSV}`)
             .then(res => res.json())
             .then(data => {
-              // Topbar
               document.getElementById('topbar-name').innerText = data.hoTen;
               document.getElementById('topbar-msv').innerText = data.maSV;
               document.getElementById('drop-name').innerText = data.hoTen;
@@ -183,7 +181,6 @@
               document.getElementById('topbar-avatar').src = avatarUrl;
               document.getElementById('main-avatar').src = avatarUrl + "&size=200";
               
-              // Page Data
               document.getElementById('welcome-name').innerText = data.hoTen;
               document.getElementById('info-msv').innerText = data.maSV;
               document.getElementById('info-hoten').innerText = data.hoTen;
@@ -191,10 +188,9 @@
               document.getElementById('info-noisinh').innerText = data.noiSinh || "---";
               document.getElementById('info-lop').innerText = data.lop;
               document.getElementById('info-nganh').innerText = data.nganh;
-              document.getElementById('info-sdt').innerText = "********"; // Ẩn sđt
+              document.getElementById('info-sdt').innerText = "********";
               document.getElementById('info-email').innerText = data.maSV.toLowerCase() + "@stu.ptit.edu.vn";
               
-              // Fill Modal Edit
               document.getElementById('edit-hoten').value = data.hoTen;
               document.getElementById('edit-noisinh').value = data.noiSinh || "";
               document.getElementById('edit-ngaysinh').value = data.ngaySinh || "";
@@ -218,7 +214,7 @@
                   datasets: [{
                       label: 'Điểm hệ 10',
                       data: scores,
-                      backgroundColor: '#32cd32', // Xanh lá giống PTIT
+                      backgroundColor: '#32cd32',
                       borderRadius: 4,
                       barPercentage: 0.5
                   }]
@@ -237,7 +233,6 @@
       });
   }
 
-  // Edit Modal Logic
   function openEditModal() { document.getElementById('editModal').classList.add('show'); }
   function closeEditModal() { document.getElementById('editModal').classList.remove('show'); document.getElementById('edit-msg').innerText = ''; }
   
@@ -255,14 +250,13 @@
       .then(data => {
           if(data === 'SUCCESS') {
               closeEditModal();
-              loadInfo(); // reload data
+              loadInfo();
           } else {
               document.getElementById('edit-msg').innerText = 'Lưu thất bại!';
           }
       });
   }
 
-  // Password Modal Logic
   function openPwdModal() { document.getElementById('pwdModal').classList.add('show'); }
   function closePwdModal() { 
       document.getElementById('pwdModal').classList.remove('show'); 
