@@ -32,7 +32,6 @@ function hocphi_get($pdo, $maSV) {
 
 function hocphi_pay($pdo, $requestData) {
     $maSV   = $requestData['maSV'] ?? '';
-    $idHp   = $requestData['idHp'] ?? 0;
     $amount = $requestData['amount'] ?? 0;
 
     $stmt = $pdo->prepare("SELECT * FROM sinh_vien WHERE ma_sv = ?");
@@ -40,13 +39,16 @@ function hocphi_pay($pdo, $requestData) {
     $sv = $stmt->fetch();
 
     if ($sv['balance'] < $amount) {
-        echo json_encode(["status" => "INSUFFICIENT_FUNDS"]);
+        echo json_encode(["message" => "Lỗi: Số dư tài khoản ảo không đủ!"]);
         return;
     }
 
     $pdo->prepare("UPDATE sinh_vien SET balance = balance - ? WHERE ma_sv = ?")->execute([$amount, $maSV]);
-    $pdo->prepare("UPDATE hoc_phi SET so_tien_da_nop = so_tien_da_nop + ? WHERE id_hp = ?")->execute([$amount, $idHp]);
-    $pdo->prepare("UPDATE hoc_phi SET trang_thai = 'Đã hoàn thành' WHERE id_hp = ? AND so_tien_da_nop >= so_tien_phai_nop")->execute([$idHp]);
+    $pdo->prepare("UPDATE hoc_phi SET so_tien_da_nop = so_tien_da_nop + ? WHERE ma_sv = ?")->execute([$amount, $maSV]);
+    
+    // Cập nhật trạng thái
+    $pdo->prepare("UPDATE hoc_phi SET trang_thai = 'Đã nộp' WHERE ma_sv = ? AND so_tien_da_nop >= so_tien_phai_nop")->execute([$maSV]);
+    $pdo->prepare("UPDATE hoc_phi SET trang_thai = 'Đã nộp một phần' WHERE ma_sv = ? AND so_tien_da_nop > 0 AND so_tien_da_nop < so_tien_phai_nop")->execute([$maSV]);
 
-    echo json_encode(["status" => "SUCCESS"]);
+    echo json_encode(["message" => "Thanh toán thành công " . number_format($amount) . " VNĐ!"]);
 }
