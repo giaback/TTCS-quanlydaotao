@@ -13,5 +13,3 @@ function ketqua_getByMaSV($pdo, $maSV) {
     $stmt->execute([$maSV]);
     echo json_encode($stmt->fetchAll());
 }
-?>
-

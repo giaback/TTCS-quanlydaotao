@@ -22,5 +22,3 @@ function lichthi_getByMaSV($pdo, $maSV) {
     $stmt->execute([$maSV]);
     echo json_encode($stmt->fetchAll());
 }
-?>
-

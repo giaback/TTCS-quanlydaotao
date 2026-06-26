@@ -39,4 +39,3 @@ try {
 } catch(PDOException $e) {
     die(json_encode(["error" => "Kết nối CSDL bằng PDO thất bại: " . $e->getMessage()]));
 }
-?>

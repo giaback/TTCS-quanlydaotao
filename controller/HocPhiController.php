@@ -50,5 +50,3 @@ function hocphi_pay($pdo, $requestData) {
 
     echo json_encode(["status" => "SUCCESS"]);
 }
-?>
-

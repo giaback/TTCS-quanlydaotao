@@ -95,5 +95,3 @@ function _dangky_tinhLaiHocPhi($pdo, $maSV) {
         $pdo->prepare("INSERT INTO hoc_phi (ma_sv, hoc_ky, so_tien_phai_nop, so_tien_da_nop, trang_thai) VALUES (?, 'Học kỳ 1 - 2024-2025', ?, 0, 'Chưa nộp')")->execute([$maSV, $tongTien]);
     }
 }
-?>
-

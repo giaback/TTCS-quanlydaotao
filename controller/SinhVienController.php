@@ -66,6 +66,3 @@ function sinhvien_changePassword($pdo, $requestData) {
     $pdo->prepare("UPDATE sinh_vien SET so_dien_thoai = ? WHERE ma_sv = ?")->execute([$newPw, $maSV]);
     echo "SUCCESS";
 }
-?>
-
-

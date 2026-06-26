@@ -10,5 +10,3 @@ function lophocphan_getAll($pdo) {
     $stmt->execute();
     echo json_encode($stmt->fetchAll());
 }
-?>
-
