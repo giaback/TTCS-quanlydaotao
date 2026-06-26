@@ -11,7 +11,7 @@ function lichthi_getByMaSV($pdo, $maSV) {
 
     $stmt = $pdo->prepare("
         SELECT lt.ngay_thi as ngayThi, lt.ca_thi as caThi, lt.phong_thi as phongThi,
-               m.ma_mon as maMon, m.ten_mon as tenMon
+               m.ma_mon as maMon, m.ten_mon as tenMon, l.nhom as nhom
         FROM lich_thi lt
         JOIN mon_hoc m ON lt.ma_mon = m.ma_mon
         JOIN lop_hoc_phan l ON l.ma_mon = m.ma_mon
